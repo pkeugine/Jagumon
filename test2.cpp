@@ -5,8 +5,8 @@
 using namespace std;
 
 void MAINPROGRAM();
-void JagumonRandomize();
-void PCJagumon();
+//void JagumonRandomize();
+//void PCJagumon();
 void Player();
 
 int PlayerHealth = 100;
@@ -36,17 +36,16 @@ public:
 	int showDefense() { return defense; }
 	int showSpeed() { return speed; }
 	int showStamina() { return stamina; }
-
 	void setStamina(int newst) { this->stamina = newst; }
 
-	//복사생성자 (깊은 복사로)
+	//복사생성자 (얕은 복사)
 	/*
 	Jagumon(Jagumon &jagu) {
-		name = jagu.getName();
-		power = jagu.getPower();
-		defense = jagu.getDefense();
-		speed = jagu.getSpeed();
-		stamina = jagu.getStamin();
+		name = jagu.showName();
+		power = jagu.showPower();
+		defense = jagu.showDefense();
+		speed = jagu.showSpeed();
+		stamina = jagu.showStamina();
 	}
 	*/
 };
@@ -62,10 +61,14 @@ Jagumon JJJ("JJJ", 80, 15, 40, 100);
 Jagumon KKK("KKK", 90, 10, 45, 100);
 Jagumon LLL("LLL", 95, 10, 50, 100);
 
+Jagumon user1("user1", 0, 0, 0, 0);
+Jagumon user2("user2", 0, 0, 0, 0);
+Jagumon user3("user3", 0, 0, 0, 0);
+
 vector<Jagumon>jagumon = { AAA,BBB,CCC,DDD,EEE,GGG,HHH,JJJ,KKK,LLL};
 
-vector<Jagumon> User(5); //사용자가 선택한 자구몬을 저장할 벡터 
-vector<Jagumon> PC(5); //pc의 자구몬을 저장할 벡터
+vector<Jagumon> User(3); //사용자가 선택한 자구몬을 저장할 벡터 
+vector<Jagumon> PC(3); //pc의 자구몬을 저장할 벡터
 
 void MAINPROGRAM()
 {
@@ -73,34 +76,74 @@ void MAINPROGRAM()
 }
 void Player(){
 	string jagumoncall = "";
-	bool found = false;
 
 	cout << "<Jagumon List>" << endl;
 	cout << "1. AAA" << endl;
 	cout << "2. BBB" << endl;
 	cout << "3. CCC" << endl;
 	cout << "4. DDD" << endl;
-	cout << "원하는 자구몬의 이름을 입력하세요!" << endl;
+	cout << "5. EEE" << endl;
+	cout << "6. GGG" << endl;
+	cout << "7. HHH" << endl;
+	cout << "8. JJJ" << endl;
+	cout << "9. KKK" << endl;
+	cout << "10. LLL" << endl;
 	
-	cin >> jagumoncall;
-	cout << "\n";
 
-	for (int i = 0; i < jagumon.size(); i++) {
-		if (jagumoncall == jagumon.at(i).showName()) {
-			cout << "당신의 자구몬은 " << jagumon.at(i).showName() << " 입니다!" << endl;
-			found = true;
-			
-			// User.push_back(jagumoncall); <- 방법1 : 입력한 것을 user 벡터에 입력하고싶음, 근데 인자로 int형이랑 char형만 받음
-			// 방법2 : 복사 생성자를 이용해서 객체 하나를 만든다.
+	for (int i = 1; i < 4; i++) {
+
+		cout << "원하는 자구몬의 이름을 입력하세요!" << endl;
+		cin >> jagumoncall;
+		cout << "\n";
+		
+		if (jagumoncall == "AAA") {
+			User[i - 1] = AAA;
+			cout << "선택하신 " << i << "번째 자구몬은 " << AAA.showName() << " 입니다." << endl;
 		}
+		else if (jagumoncall == "BBB") {
+			User[i - 1] = BBB;
+			cout << "선택하신 " << i << "번째 자구몬은 " << BBB.showName() << " 입니다." << endl;
+		}	
+		else if (jagumoncall == "CCC") {
+			User[i - 1] = CCC;
+			cout << "선택하신 " << i << "번째 자구몬은 " << CCC.showName() << " 입니다." << endl;
+		}
+		else if (jagumoncall == "DDD") {
+			User[i - 1] = DDD;
+			cout << "선택하신 " << i << "번째 자구몬은 " << DDD.showName() << " 입니다." << endl;
+		}
+		else if (jagumoncall == "EEE") {
+			User[i - 1] = EEE;
+			cout << "선택하신 " << i << "번째 자구몬은 " << EEE.showName() << " 입니다." << endl;
+		}
+		else if (jagumoncall == "GGG") {
+			User[i - 1] = GGG;
+			cout << "선택하신 " << i << "번째 자구몬은 " << GGG.showName() << " 입니다." << endl;
+		}
+		else if (jagumoncall == "HHH") {
+			User[i - 1] = HHH;
+			cout << "선택하신 " << i << "번째 자구몬은 " << HHH.showName() << " 입니다." << endl;
+		}
+		else if (jagumoncall == "JJJ") {
+			User[i - 1] = JJJ;
+			cout << "선택하신 " << i << "번째 자구몬은 " << JJJ.showName() << " 입니다." << endl;
+		}
+		else if (jagumoncall == "KKK") {
+			User[i - 1] = KKK;
+			cout << "선택하신 " << i << "번째 자구몬은 " << KKK.showName() << " 입니다." << endl;
+		}
+		else if (jagumoncall == "LLL") {
+			User[i - 1] = LLL;
+			cout << "선택하신 " << i << "번째 자구몬은 " << LLL.showName() << " 입니다." << endl;
+		}
+		else {
+			cout << "잘못 입력했습니다. 다시 입력해주세요." << endl;
+			i--;
+		}
+		cout << endl;
 	}
-	if (found == false) {
-		cout << "잘못 입력했습니다. 다시 입력해주세요." << endl;
-		Player();
-	}
-	cout << endl;
 }
-
+/*
 void JagumonRandomize() //Unused At the moment
 {
 	time_t T;
@@ -152,7 +195,7 @@ void PCJagumon()
 		}
 	}
 }
-
+*/
 void Attack(Jagumon &user, Jagumon &pc) { //첫번째 인자(user)가 두번째 인자(pc)에게 공격
 	cout << user.showName() << "이(가) 공격을 했습니다!" << endl;
 	if (user.showPower() >= pc.showStamina()) { //pc의 남은 체력이 user의 공격력보다 낮을 때 
@@ -205,6 +248,11 @@ int main()
 		MAINPROGRAM();
 
 		//user입장에서 구현
+		//User vector에 들어있는거 확인
+		cout << "사용자가 선택한 Jagumon은 ";
+		for (int i = 0; i < 3; i++)
+			cout << User.at(i).showName() << " ";
+		cout << "입니다." << endl;
 		
 		while (BBB.showStamina() != 0) {
 			cout << "<1. 공격> <2. 방어> <3. 교체> 중 하나를 선택하세요." << endl;
@@ -212,7 +260,7 @@ int main()
 			switch (n)
 			{
 			case 1:
-				Attack(AAA, BBB);
+				Attack(User.at(0), BBB);
 				break;
 			case 2:
 				Defense(AAA, BBB);
