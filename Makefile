@@ -1,0 +1,1 @@
+LDFLAGS=-lncurses all: demo
