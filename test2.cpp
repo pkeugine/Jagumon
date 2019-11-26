@@ -8,6 +8,7 @@ void MAINPROGRAM();
 //void JagumonRandomize();
 //void PCJagumon();
 void Player();
+void COM();
 
 int PlayerHealth = 100;
 int TrexHealth = 100;
@@ -50,7 +51,7 @@ public:
 	*/
 };
 
-Jagumon AAA("AAA", 50, 50, 5, 100);
+Jagumon AAA("AAA", 100, 50, 60, 100);
 Jagumon BBB("BBB", 20, 45, 10, 100);
 Jagumon CCC("CCC", 30, 40, 15, 100);
 Jagumon DDD("DDD", 40, 35, 20, 100);
@@ -61,9 +62,6 @@ Jagumon JJJ("JJJ", 80, 15, 40, 100);
 Jagumon KKK("KKK", 90, 10, 45, 100);
 Jagumon LLL("LLL", 95, 10, 50, 100);
 
-Jagumon user1("user1", 0, 0, 0, 0);
-Jagumon user2("user2", 0, 0, 0, 0);
-Jagumon user3("user3", 0, 0, 0, 0);
 
 vector<Jagumon>jagumon = { AAA,BBB,CCC,DDD,EEE,GGG,HHH,JJJ,KKK,LLL};
 
@@ -73,6 +71,7 @@ vector<Jagumon> PC(3); //pc의 자구몬을 저장할 벡터
 void MAINPROGRAM()
 {
 	Player();
+	COM();
 }
 void Player(){
 	string jagumoncall = "";
@@ -89,10 +88,11 @@ void Player(){
 	cout << "9. KKK" << endl;
 	cout << "10. LLL" << endl;
 	
-
+	cout << "<< 주의! 출전 순서는 1번째 -> 2번째 -> 3번째 자구몬 순서이므로 신중하게 골라주세요! >>" << endl;
 	for (int i = 1; i < 4; i++) {
 
 		cout << "원하는 자구몬의 이름을 입력하세요!" << endl;
+		
 		cin >> jagumoncall;
 		cout << "\n";
 		
@@ -142,6 +142,12 @@ void Player(){
 		}
 		cout << endl;
 	}
+}
+//사용자가 고른 것을 제외한 객체 중 3개 랜덤으로 고르게 만들어야 한다.
+void COM() {
+	PC[0] = LLL;
+	PC[1] = KKK;
+	PC[2] = JJJ;
 }
 /*
 void JagumonRandomize() //Unused At the moment
@@ -211,9 +217,14 @@ void Attack(Jagumon &user, Jagumon &pc) { //첫번째 인자(user)가 두번째 인자(pc)�
 	}
 	cout << endl;
 }
-
+// 방어는 방어력만큼 무조건 체력 회복
 void Defense(Jagumon &user, Jagumon &pc) { //첫번째 인자가 두번째 인자의 공격을 방어
 	cout << user.showName() << "이(가) 방어를 선택했습니다!" << endl;
+	cout << user.showName() << "의 체력이 " << user.showDefense() << " 만큼 회복되었습니다."<<endl;
+	user.setStamina(user.showStamina() + user.showDefense());
+	cout << user.showName() << "의 현재 체력 : " << user.showStamina() << endl;
+	cout << pc.showName() << "의 현재 체력 : " << pc.showStamina() << endl;
+	/*
 	if (user.showDefense() > pc.showPower()) { // user의 방어력이 pc의 공격력보다 높을 때 : 방어 성공 + 체력 10 증가
 		cout<< user.showName() << "이(가) 방어에 성공했습니다!" << endl;
 		user.setStamina(user.showStamina() + 10);
@@ -221,17 +232,53 @@ void Defense(Jagumon &user, Jagumon &pc) { //첫번째 인자가 두번째 인자의 공격을 
 		cout << pc.showName() << "의 현재 체력 : " << pc.showStamina() << endl;
 	}
 	else { // user의 방어력이 pc의 공격력보다 낮을 때 : user의 체력이 pc의 공격력만큼 감소
-		cout << user.showName() << "의 체력이 " << user.showStamina() << "로 감소했습니다!" << endl;
+		cout << user.showName() << "의 체력이 " << pc.showPower() << "만큼 감소했습니다!" << endl;
 		user.setStamina(pc.showStamina() - pc.showPower());
-		cout << user.showName() << "의 현재 체력 : " << user.showStamina() << endl;
+		if (user.showStamina() <= 0)
+			cout << user.showName() << "이 사망했습니다." << endl;
+		else
+			cout << user.showName() << "의 현재 체력 : " << user.showStamina() << endl;
 		cout << pc.showName() << "의 현재 체력 : " << pc.showStamina() << endl;
 	}
 	cout << endl;
+	*/
+}
+//공격과 수비 중 하나를 선택하는 함수 
+void makeTurn(Jagumon &jag1, Jagumon &jag2) {
+	int n;
+	cin >> n;
+
+	switch (n)
+	{
+	case 1:
+		Attack(jag1, jag2);
+		break;
+	case 2:
+		Defense(jag1, jag2);
+		break;
+	}
 }
 
+//자구몬의 이동속도에 따른 우선순위를 구현하는 함수
+void actingBySpeed(Jagumon &user, Jagumon &pc) {
+	if (user.showSpeed() > pc.showSpeed()) { // 내 속도(첫번째 인자)가 상대방의 속도(두번째 인자)보다 빠른 경우
+		makeTurn(user, pc); // 내 턴 먼저 실행
+		makeTurn(pc, user); // 그 후 상대 턴 실행 -> 이걸 컴퓨터의 랜덤 함수로 대체해야함!
+	}
+	else {
+		makeTurn(pc, user);
+		makeTurn(user, pc);
+	}
+	//(user.showSpeed() > pc.showSpeed()) ? makeTurn(user, pc) : makeTurn(pc, user);
+}
+
+
+
+/*
 void Change(Jagumon user) {
 	cout << "어떤 자구몬으로 교체하시겠습니까?" << endl;
 }
+*/
 
 int main()
 {
@@ -247,30 +294,52 @@ int main()
 	{
 		MAINPROGRAM();
 
-		//user입장에서 구현
-		//User vector에 들어있는거 확인
+		int num1 = 0;
+		int num2 = 0;
+
 		cout << "사용자가 선택한 Jagumon은 ";
 		for (int i = 0; i < 3; i++)
 			cout << User.at(i).showName() << " ";
 		cout << "입니다." << endl;
+
+		cout << "PC가 선택한 Jagumon은 ";
+		for (int i = 0; i < 3; i++)
+			cout << PC.at(i).showName() << " ";
+		cout << "입니다." << endl;
+
+		cout << endl;
 		
-		while (BBB.showStamina() != 0) {
-			cout << "<1. 공격> <2. 방어> <3. 교체> 중 하나를 선택하세요." << endl;
-			cin >> n;
-			switch (n)
-			{
-			case 1:
-				Attack(User.at(0), BBB);
-				break;
-			case 2:
-				Defense(AAA, BBB);
-				break;
-			case 3:
-				Change(AAA);
-				break;
+		// 현재 대결에 출전한 내 자구몬과 pc의 자구몬
+		Jagumon presentUser = User.at(num1);
+		Jagumon presentPC = PC.at(num2);
+		while (num1 < 3 || num2 < 3) {
+			while (presentUser.showStamina() != 0 || presentPC.showStamina() != 0) {
+				cout << "<1. 공격> <2. 방어> 중 하나를 선택하세요." << endl;
+				actingBySpeed(presentUser, presentPC);
+				if (presentUser.showStamina() <= 0) {
+					if (num1 >= 3)
+						break;
+					else {
+						num1++;
+						presentUser = User.at(num1);
+						cout << "User의 사용자 자구몬이 " << presentUser.showName() << "으로 바뀌었습니다!" << endl;
+					}
+				}
+				else if (presentPC.showStamina() <= 0) {
+					if (num2 == 3)
+						break;
+					else {
+						num2++;
+						presentPC = PC.at(num2);
+						cout << "PC의 사용자 자구몬이 " << presentPC.showName() << "으로 바뀌었습니다!" << endl;
+					}
+				}
 			}
 		}
-		
+		if (num1 == 3)
+			cout << "당신의 자구몬 3마리 모두 사망했습니다. 패배하셨습니다." << endl;
+		else if(num2 == 3)
+			cout << "PC의 자구몬 3마리 모두 사망했습니다. 승리하셨습니다." << endl;
 	}
 	else if (choice == "Exit" || choice == "exit")
 		exit;
