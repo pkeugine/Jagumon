@@ -1,13 +1,18 @@
 #include <cstdint>
+
 #include "game.h"
 
-int main(int argc, char* argv[]) {
-  int init_status = init();
 
-  if(init_status == 0)
-    run();
 
-  close();
+int main(int argc, char **argv){
+    // parse 
+    // quiz q;
+    // quiz();
+    
+    int init_status = init(); 
 
-  return 0;
+    if(init_status == 0)
+        run();
+
+    return 0;
 }
