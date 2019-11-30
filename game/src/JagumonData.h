@@ -3,14 +3,14 @@
 
 class Jagumon {
 private:
-  std::string name; // name
+  const char* name; // name
   int power; // offense
   int defense; // shield
   int speed; // move priority
   int stamina; // health
 public:
   Jagumon() {};
-  Jagumon(std::string name, int power, int defense, int speed, int stamina) { //생성자
+  Jagumon(const char* name, int power, int defense, int speed, int stamina) { //생성자
   this->name = name;
   this->power = power;
   this->defense = defense;
@@ -18,7 +18,7 @@ public:
   this->stamina = stamina;
   }
 
-  std::string showName() {return name;}
+  const char* showName() {return name;}
   int showPower() { return power;}
   int showDefense() { return defense; }
   int showSpeed() { return speed; }

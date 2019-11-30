@@ -80,9 +80,14 @@ int init() {
 void run() {
     
     int tick = 0;
-    int in_char = 0;
-    bool exit_requested = false;
-    bool game_over = false;
+    int choo_char = 0; // selecting Jagumon in CHOOSE JAGUMON PHASE
+    int in_char = 0; // selecting action in BATTLE PHASE
+    int finger = 0; // point at the Jagumon of Player's choice
+    bool exit_flag = false; // when True, immediately finish the game
+    bool game_over = false; // LOST T^T
+
+    int party = 0; 	// n-th place in player's party. Starts at -1 because
+			// it immediately rises as player chooses Jagumon
    
     // draw frame around whole screen
     wattron(main_window, A_BOLD);
@@ -131,7 +136,7 @@ void run() {
         }
 
         else if(in_char == 'q') {
-            exit_requested = true;
+            exit_flag = true;
             break;
         }
 
@@ -145,23 +150,68 @@ void run() {
 
     // white-out
     mvwhline(main_window, 22, 57, ' ', 22); 
+    
+    // ----------CHOOSE JAGU PHASE---------
+    tick = 0;
+    while(1) {
+	// clear game, main window
+	werase(game_window);
 
+	// read input, set them all to lower case
+	choo_char = wgetch(main_window);
+	choo_char = tolower(choo_char);
+
+	switch(choo_char) {
+	    case 'a':
+		if(finger>0) finger--;
+		else finger=10;
+		break;
+	    case 'd':
+		if(finger<9) finger++;
+		else finger=0;
+		break;
+	    case 'q':
+		exit_flag = true;
+		break;
+	    case ' ':
+		party++;
+		User[party] = jagumon[finger];
+        	mvwprintw(game_window, 12, 10, User.at(party).showName());
+		break;
+	    default:
+		break;
+	}
+
+	for(int i=0; i<10; i++) {
+          mvwprintw(game_window, 2+i, 10, jagumon[i].showName());
+	}
+	mvwprintw(game_window, 2+finger, 9, ">");
+	
+	// refresh windows
+	wrefresh(main_window);
+	wrefresh(game_window);
+
+	if(exit_flag) break;
+	
+
+	tick++;
+	
+	usleep(10000); //1ms
+    }
+
+    // ----------- BATTLE PHASE -----------
     tick = 0;
     while(1) {
 
+	// TODO check if Jagumons are alive. If not, gameover.
         // clear game window
         werase(game_window);
  
-        // TODO: Give warning message if screen is too small!
-        if(cur_size.x > screen_area.width() || cur_size.y > screen_area.height()) {}
-        //winResize(cur_width, cur_height);
-    
-        // read in input key, if any (non-blocking as defined earlier)
+	// read input, set them all to lower case
         in_char = wgetch(main_window);
         in_char = tolower(in_char);
 
-        switch(in_char) {
-            case 'q': 
+        switch(in_char) { 
             case KEY_UP:
             case 'w':
             case 'i':
@@ -169,12 +219,16 @@ void run() {
             case 's':
             case 'k':
             case KEY_LEFT: 
-            case 'a':
             case 'j':
             case KEY_RIGHT: 
-            case 'd':
             case 'l':
-                exit_requested = true; 
+	        break;
+	    case 'd':
+		break;
+	    case 'a':
+	        break;
+	    case 'q':
+                exit_flag = true; 
                 break;
             default: 
                 break;
@@ -183,24 +237,43 @@ void run() {
 
         // draw UI elements
         // energy bar
-        wmove(main_window, 20, 1);
-        whline(main_window, ' ', 25); // health bar is 25 chars long
-        wmove(main_window, 20, 1);
-        drawEnergyBar(AAA.showStamina());
+        wmove(game_window, 1, 10);
+        whline(game_window, ' ', 25); // health bar is 25 chars long
+        wmove(game_window, 1, 10);
+        drawEnergyBar(BBB.showStamina()); // opponent stamina
+
+	wmove(game_window, 15, 43);
+	whline(game_window, ' ', 25);
+	wmove(game_window, 15, 43);
+	drawEnergyBar(AAA.showStamina()); // my stamina
 
         // draw static string to hold percentage
-        mvwprintw(main_window, 21, 1, " - S T A M I N A -     //");
+        mvwprintw(game_window, 2, 1, " - O P P O N E N T   S T A M I N A -      //");
+	mvwprintw(game_window, 3, 1, "-----------------------------------------//");
+	mvwprintw(game_window, 16, 33, "\\\\        -   MY  J A G U M O N   -");
+	mvwprintw(game_window, 17, 34, "\\\\-----------------------------------------"); 
 
-        // draw numeric percentage
-        wattron(main_window, A_BOLD);
-        if(AAA.showStamina() <= 25) {
-          wattron(main_window, COLOR_PAIR(4));
+        // draw ENEMY percentage
+        wattron(game_window, A_BOLD);
+        if(BBB.showStamina() <= 25) {
+          wattron(game_window, COLOR_PAIR(4));
           if(tick % 100 < 50)
-            mvwprintw(main_window, 21, 18, "%i%%", AAA.showStamina()); 
-          wattroff(main_window, COLOR_PAIR(4));
+            mvwprintw(game_window, 2, 38, "%i%%", BBB.showStamina()); 
+          wattroff(game_window, COLOR_PAIR(4));
         } else
-            mvwprintw(main_window, 21, 18, "%i%%", AAA.showStamina()); 
-        wattroff(main_window, A_BOLD);
+            mvwprintw(game_window, 2, 38, "%i%%", BBB.showStamina()); 
+        wattroff(game_window, A_BOLD);
+
+	// draw MY stamina percentage
+	wattron(game_window, A_BOLD);
+        if(AAA.showStamina() <= 25) {
+          wattron(game_window, COLOR_PAIR(4));
+          if(tick % 100 < 50)
+            mvwprintw(game_window, 16, 37, "%i%%", AAA.showStamina()); 
+          wattroff(game_window, COLOR_PAIR(4));
+        } else
+            mvwprintw(game_window, 16, 37, "%i%%", AAA.showStamina()); 
+        wattroff(game_window, A_BOLD);
 
         //usleep(100);
 
@@ -227,7 +300,6 @@ void run() {
             wrefresh(main_window);
             wrefresh(game_window);
 
-            // TODO print out score 
             // print game over prompt 
             mvwprintw(game_window, ypos, xpos , "GAME OVER");
             mvwprintw(game_window, ypos + 2, xpos - 7, "Press SPACE to play again");
@@ -241,12 +313,12 @@ void run() {
                     tick = 0;
                     in_char = 0;
                     game_over = false;
-                    exit_requested = false;
+                    exit_flag = false;
                     break;
                 }
 
                 else if(in_char == 'q') {
-                    exit_requested = true;
+                    exit_flag = true;
                     break;
                 }
 
@@ -257,7 +329,7 @@ void run() {
             }
         }
 
-        if(exit_requested) break;
+        if(exit_flag) break;
 
         tick++;
 
@@ -329,10 +401,10 @@ void drawEnergyBar(int a) {
         else
             col_pair = 4; // red
 
-        wattron(main_window, COLOR_PAIR(col_pair));
-        wattron(main_window, A_BOLD);
-        waddch(main_window, '/');
-        wattroff(main_window, A_BOLD);
-        wattroff(main_window, COLOR_PAIR(col_pair));
+        wattron(game_window, COLOR_PAIR(col_pair));
+        wattron(game_window, A_BOLD);
+        waddch(game_window, '/');
+        wattroff(game_window, A_BOLD);
+        wattroff(game_window, COLOR_PAIR(col_pair));
     }
 }
