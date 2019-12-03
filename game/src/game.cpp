@@ -164,19 +164,52 @@ void run() {
 	switch(choo_char) {
 	    case 'a':
 		if(finger>0) finger--;
-		else finger=10;
+		else finger=9;
 		break;
 	    case 'd':
-		if(finger<9) finger++;
+		if(finger<8) finger++;
 		else finger=0;
 		break;
 	    case 'q':
 		exit_flag = true;
 		break;
 	    case ' ':
+                if(party == 3) {
+                  party++;
+                  break;
+                }
+                if(finger == 0) {
+                  User[party] = AAA;
+                }
+                else if(finger == 1) {
+                  User[party] = BBB;
+                }
+                else if(finger == 2) {
+                  User[party] = CCC;
+                }
+                else if(finger == 3) {
+                  User[party] = DDD;
+                }
+                else if(finger == 4) {
+                  User[party] = EEE;
+                }
+                else if(finger == 5) {
+                  User[party] = GGG;
+                }
+                else if(finger == 6) {
+                  User[party] = HHH;
+                }
+                else if(finger == 7) {
+                  User[party] = JJJ;
+                }
+                else if(finger == 8) {
+                  User[party] = KKK;
+                }
+                else if(finger == 9) {
+                  User[party] = LLL;
+                }
+                //LEFT OFF HERE .. SHOW WHICH JAGUMON IS TAKEN
 		party++;
-		User[party] = jagumon[finger];
-        	mvwprintw(game_window, 12, 10, User.at(party).showName());
 		break;
 	    default:
 		break;
@@ -186,12 +219,31 @@ void run() {
           mvwprintw(game_window, 2+i, 10, jagumon[i].showName());
 	}
 	mvwprintw(game_window, 2+finger, 9, ">");
-	
+        mvwprintw(game_window, 14, 9, "User Jagumon:");
+        if(party >= 1) {
+          mvwprintw(game_window, 17, 9, "3. ");
+          mvwprintw(game_window, 17, 12, User[0].showName());
+          if(party >=2) {
+            mvwprintw(game_window, 16, 9, "2. ");
+            mvwprintw(game_window, 16, 12, User[1].showName());
+          }
+          if(party >=3) {
+            mvwprintw(game_window, 15, 9, "1. ");
+            mvwprintw(game_window, 15, 12, User[2].showName());
+          }
+        }
+        /*
+        if(party >= 3) {
+          for(int i=2; i>=0; i--) {
+            mvwprintw(game_window, 17-i, 9, User[i].showName());
+          }
+        }
+        */
 	// refresh windows
 	wrefresh(main_window);
 	wrefresh(game_window);
 
-	if(exit_flag) break;
+	if(exit_flag or party == 4) break;
 	
 
 	tick++;
@@ -245,7 +297,7 @@ void run() {
 	wmove(game_window, 15, 43);
 	whline(game_window, ' ', 25);
 	wmove(game_window, 15, 43);
-	drawEnergyBar(AAA.showStamina()); // my stamina
+	drawEnergyBar(User[1].showStamina()); // my stamina
 
         // draw static string to hold percentage
         mvwprintw(game_window, 2, 1, " - O P P O N E N T   S T A M I N A -      //");
