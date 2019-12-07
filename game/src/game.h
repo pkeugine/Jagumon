@@ -1,8 +1,6 @@
 #ifndef QUIZ_H
 #define QUIZ_H
 
-
-
 // minimum 16-bit unsigned int 2D vector
 typedef struct {
     uint_fast16_t x;

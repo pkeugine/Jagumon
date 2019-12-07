@@ -53,12 +53,10 @@ std::vector<Jagumon>jagumon = { AAA, BBB, CCC, DDD, EEE, GGG, HHH, JJJ, KKK, LLL
 std::vector<Jagumon> User(3);
 std::vector<Jagumon> PC(3);
 
-void MAINPROGRAM();
+int opponentRand = 0;
 
-void Player();
-
-void Attack(Jagumon, Jagumon);
-void Defense(Jagumon, Jagumon);
-void Change(Jagumon);
+void Attack(Jagumon&, Jagumon&);
+void Defense(Jagumon&, Jagumon&);
+void actingBySpeed(Jagumon&, Jagumon&, char);
 
 #endif

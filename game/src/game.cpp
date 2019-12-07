@@ -5,7 +5,9 @@
 #include <string>
 #include <stdlib.h>
 #include <time.h>
+#include <stdlib.h>
 #include <vector>
+#include <random>
 
 #include "game.h"
 #include "JagumonData.h"
@@ -17,6 +19,13 @@ rect game_area;
 rect screen_area;
 
 vec2ui cur_size;
+
+void Attack(Jagumon&, Jagumon&);
+void Defense(Jagumon&, Jagumon&);
+void actingBySpeed(Jagumon&, Jagumon&, char);
+
+size_t story_part = 0;
+size_t story_position = 0;
 
 int init() {
     
@@ -83,10 +92,17 @@ void run() {
     int choo_char = 0; // selecting Jagumon in CHOOSE JAGUMON PHASE
     int in_char = 0; // selecting action in BATTLE PHASE
     int finger = 0; // point at the Jagumon of Player's choice
+    int blockComp1 = -1;
+    int blockComp2 = -1;
+    int blockComp3 = -1;
+    int blockComp4 = -1;
+    int blockComp5 = -1;
+    int fingerComp = 0;  // point at the Jaugmon of Comp's choice
+    int deadPC = 0; // Count down how many PC jagumons are dead
     bool exit_flag = false; // when True, immediately finish the game
     bool game_over = false; // LOST T^T
 
-    int party = 0; 	// n-th place in player's party. Starts at -1 because
+    int party = 0; 	// n-th place in player's party. Starts at 0 because
 			// it immediately rises as player chooses Jagumon
    
     // draw frame around whole screen
@@ -115,8 +131,8 @@ void run() {
     mvwprintw(main_window, 22, 62, "SPACE(next) -->"); 
 
     tick = 0;
-    size_t story_part = 0;
-    size_t story_position = 0;
+    //size_t story_part = 0;
+    //size_t story_position = 0;
 
     while(1) {
         werase(game_window);
@@ -167,7 +183,7 @@ void run() {
 		else finger=9;
 		break;
 	    case 'd':
-		if(finger<8) finger++;
+		if(finger<9) finger++;
 		else finger=0;
 		break;
 	    case 'q':
@@ -208,28 +224,89 @@ void run() {
                 else if(finger == 9) {
                   User[party] = LLL;
                 }
-                //LEFT OFF HERE .. SHOW WHICH JAGUMON IS TAKEN
+                if(party==0) blockComp1=finger;
+                else if(party==1) blockComp2=finger;
+                else if(party==2) blockComp3=finger;
+
+                //randomize computer's option, avoid chosen one's
+                do {
+                  fingerComp = rand()%10;
+                } while(fingerComp == blockComp1 or fingerComp == blockComp2 or fingerComp == blockComp3 or fingerComp == blockComp4 or fingerComp == blockComp5);
+                if(fingerComp == 0) {
+                  PC[party] = AAA;
+                }
+                else if(fingerComp == 1) {
+                  PC[party] = BBB;
+                }
+                else if(fingerComp == 2) {
+                  PC[party] = CCC;
+                }
+                else if(fingerComp == 3) {
+                  PC[party] = DDD;
+                }
+                else if(fingerComp == 4) {
+                  PC[party] = EEE;
+                }
+                else if(fingerComp == 5) {
+                  PC[party] = GGG;
+                }
+                else if(fingerComp == 6) {
+                  PC[party] = HHH;
+                }
+                else if(fingerComp == 7) {
+                  PC[party] = JJJ;
+                }
+                else if(fingerComp == 8) {
+                  PC[party] = KKK;
+                }
+                else if(fingerComp == 9) {
+                  PC[party] = LLL;
+                }
+                if(party == 0) blockComp4=fingerComp;
+                else if(party ==1) blockComp5=fingerComp;
 		party++;
 		break;
 	    default:
 		break;
 	}
-
+        
+        // print out UI
+        /*
 	for(int i=0; i<10; i++) {
           mvwprintw(game_window, 2+i, 10, jagumon[i].showName());
 	}
+        */
+       
+        mvwprintw(game_window, 2, 10, "AAA");
+        mvwprintw(game_window, 3, 10, "BBB");
+        mvwprintw(game_window, 4, 10, "CCC");
+        mvwprintw(game_window, 5, 10, "DDD");
+        mvwprintw(game_window, 6, 10, "EEE");
+        mvwprintw(game_window, 7, 10, "GGG");
+        mvwprintw(game_window, 8, 10, "HHH");
+        mvwprintw(game_window, 9, 10, "JJJ");
+        mvwprintw(game_window, 10, 10, "KKK");
+        mvwprintw(game_window, 11, 10, "LLL");
+
 	mvwprintw(game_window, 2+finger, 9, ">");
         mvwprintw(game_window, 14, 9, "User Jagumon:");
+        mvwprintw(game_window, 14, 25, "PC Jagumon:");
         if(party >= 1) {
           mvwprintw(game_window, 17, 9, "3. ");
           mvwprintw(game_window, 17, 12, User[0].showName());
+          mvwprintw(game_window, 17, 25, "3. ");
+          mvwprintw(game_window, 17, 28, PC[0].showName());
           if(party >=2) {
             mvwprintw(game_window, 16, 9, "2. ");
             mvwprintw(game_window, 16, 12, User[1].showName());
+            mvwprintw(game_window, 16, 25, "2. ");
+            mvwprintw(game_window, 16, 28, PC[1].showName());
           }
           if(party >=3) {
             mvwprintw(game_window, 15, 9, "1. ");
             mvwprintw(game_window, 15, 12, User[2].showName());
+            mvwprintw(game_window, 15, 25, "1. ");
+            mvwprintw(game_window, 15, 28, PC[2].showName());
           }
         }
         /*
@@ -239,6 +316,7 @@ void run() {
           }
         }
         */
+
 	// refresh windows
 	wrefresh(main_window);
 	wrefresh(game_window);
@@ -253,34 +331,30 @@ void run() {
 
     // ----------- BATTLE PHASE -----------
     tick = 0;
-    while(1) {
+    Jagumon presentUser = User.back();
+    Jagumon presentPC = PC.front();
+    story_part = 0;
+    story_position = 0;
+    while(User.size() > 0  and deadPC != 3) {
 
 	// TODO check if Jagumons are alive. If not, gameover.
         // clear game window
         werase(game_window);
- 
 	// read input, set them all to lower case
         in_char = wgetch(main_window);
         in_char = tolower(in_char);
 
         switch(in_char) { 
-            case KEY_UP:
-            case 'w':
-            case 'i':
-            case KEY_DOWN:
-            case 's':
-            case 'k':
-            case KEY_LEFT: 
-            case 'j':
-            case KEY_RIGHT: 
-            case 'l':
-	        break;
 	    case 'd':
+                actingBySpeed(presentUser, presentPC, 'd');
 		break;
 	    case 'a':
+                actingBySpeed(presentUser, presentPC, 'a');
 	        break;
 	    case 'q':
                 exit_flag = true; 
+                break;
+            case ' ':
                 break;
             default: 
                 break;
@@ -292,28 +366,75 @@ void run() {
         wmove(game_window, 1, 10);
         whline(game_window, ' ', 25); // health bar is 25 chars long
         wmove(game_window, 1, 10);
-        drawEnergyBar(BBB.showStamina()); // opponent stamina
+        drawEnergyBar(presentPC.showStamina()); // opponent stamina
 
 	wmove(game_window, 15, 43);
 	whline(game_window, ' ', 25);
 	wmove(game_window, 15, 43);
-	drawEnergyBar(User[1].showStamina()); // my stamina
+	drawEnergyBar(presentUser.showStamina()); // my stamina
 
         // draw static string to hold percentage
         mvwprintw(game_window, 2, 1, " - O P P O N E N T   S T A M I N A -      //");
 	mvwprintw(game_window, 3, 1, "-----------------------------------------//");
 	mvwprintw(game_window, 16, 33, "\\\\        -   MY  J A G U M O N   -");
 	mvwprintw(game_window, 17, 34, "\\\\-----------------------------------------"); 
+    
+        // Jagumons appearance
+        mvwprintw(game_window, 16, 10, presentUser.showName());
+        mvwprintw(game_window, 2, 60, presentPC.showName());
+        /* STUPID FUCK
+        if(presentUser.showName() == "AAA") {
+          mvwprinw(game_window, 16, 10, "AAA");
+        }
+        else if(presentUser.showName() == "BBB") {
+        }
+        else if(presentUser.showName() == "CCC") {
+        }
+        else if(presentUser.showName() == "DDD") {
+        }
+        else if(presentUser.showName() == "EEE") {
+        }
+        else if(presentUser.showName() == "GGG") {
+        }
+        else if(presentUser.showName() == "HHH") {
+        }
+        else if(presentUser.showName() == "JJJ") {
+        }
+        else if(presentUser.showName() == "KKK") {
+        }
+        else if(presentUser.showName() == "LLL") {
+        }
+        if(presentPC.showName() == "AAA") {
+        }
+        else if(presentPC.showName() == "BBB") {
+        }
+        else if(presentPC.showName() == "CCC") {
+        }
+        else if(presentPC.showName() == "DDD") {
+        }
+        else if(presentPC.showName() == "EEE") {
+        }
+        else if(presentPC.showName() == "GGG") {
+        }
+        else if(presentPC.showName() == "HHH") {
+        }
+        else if(presentPC.showName() == "JJJ") {
+        }
+        else if(presentPC.showName() == "KKK") {
+        }
+        else if(presentPC.showName() == "LLL") {
+        }
+        */
 
         // draw ENEMY percentage
         wattron(game_window, A_BOLD);
         if(BBB.showStamina() <= 25) {
           wattron(game_window, COLOR_PAIR(4));
           if(tick % 100 < 50)
-            mvwprintw(game_window, 2, 38, "%i%%", BBB.showStamina()); 
+            mvwprintw(game_window, 2, 38, "%i%%", presentPC.showStamina()); 
           wattroff(game_window, COLOR_PAIR(4));
         } else
-            mvwprintw(game_window, 2, 38, "%i%%", BBB.showStamina()); 
+            mvwprintw(game_window, 2, 38, "%i%%", presentPC.showStamina()); 
         wattroff(game_window, A_BOLD);
 
 	// draw MY stamina percentage
@@ -321,10 +442,10 @@ void run() {
         if(AAA.showStamina() <= 25) {
           wattron(game_window, COLOR_PAIR(4));
           if(tick % 100 < 50)
-            mvwprintw(game_window, 16, 37, "%i%%", AAA.showStamina()); 
+            mvwprintw(game_window, 16, 37, "%i%%", presentUser.showStamina()); 
           wattroff(game_window, COLOR_PAIR(4));
         } else
-            mvwprintw(game_window, 16, 37, "%i%%", AAA.showStamina()); 
+            mvwprintw(game_window, 16, 37, "%i%%", presentUser.showStamina()); 
         wattroff(game_window, A_BOLD);
 
         //usleep(100);
@@ -335,10 +456,6 @@ void run() {
 
 
         if(game_over) {
-
-            // store an approx location where text will be centered
-            const int xpos = game_area.width() / 2 - 6; 
-            const int ypos = game_area.height() / 2 - 2;
 
             // erase current game content on window and redraw a clean window
             werase(main_window);
@@ -353,9 +470,9 @@ void run() {
             wrefresh(game_window);
 
             // print game over prompt 
-            mvwprintw(game_window, ypos, xpos , "GAME OVER");
-            mvwprintw(game_window, ypos + 2, xpos - 7, "Press SPACE to play again");
-            mvwprintw(game_window, ypos + 4, xpos - 7, "Press 'q' to quit the game");
+            mvwprintw(game_window, 10, 10, "GAME OVER");
+            mvwprintw(game_window, 10 + 2, 10 - 7, "Press SPACE to play again");
+            mvwprintw(game_window, 10 + 4, 10 - 7, "Press 'q' to quit the game");
 
             // loop until player either quits or restarts game
             while(1) {
@@ -459,4 +576,83 @@ void drawEnergyBar(int a) {
         wattroff(game_window, A_BOLD);
         wattroff(game_window, COLOR_PAIR(col_pair));
     }
+}
+
+void Attack(Jagumon &user, Jagumon &other) {
+  if(user.showPower() >= other.showStamina()) {
+    other.setStamina(0);
+  }
+  else {
+    other.setStamina(other.showStamina() - user.showPower());
+  }
+}
+
+void Defense(Jagumon &user, Jagumon &other) {
+  if(user.showStamina() >= 100) {
+    user.setStamina(100);
+  }
+  else {
+    user.setStamina(user.showStamina() + user.showDefense());
+  }
+}
+
+void actingBySpeed(Jagumon &player, Jagumon &opponent, char choice) {
+  opponentRand = rand() % 2;
+  const std::vector<std::string> battle_text = { 
+        "Your Jagumon attacked the opponent Jagumon! Hell yeah!", 
+        "Opponent Jagumon attacked your Jagumon. It hurts!",
+        "Your Jagumon healed itself. Nice to see the work-life balance!", 
+        "Opponent Jagumon healed itself. Let's show them what we've got!"
+  };
+  if (choice == 'a') {
+    if(player.showSpeed() >= opponent.showSpeed()) {
+      Attack(player, opponent);
+      story_position = 0;
+      while(story_position < battle_text[0].length()) {
+        wattron(main_window, A_BOLD);
+        mvwaddch(main_window, 20, 5 + story_position, battle_text[0][story_position]);
+        wattroff(main_window, A_BOLD);
+        story_position++;
+        usleep(10000);
+        wrefresh(main_window);
+      }
+      usleep(70000);
+
+      if(opponentRand == 0) {
+        Attack(opponent, player);
+      }
+      else {
+        Defense(opponent, player);
+      }
+    }
+    else if(player.showSpeed() < opponent.showSpeed()) {
+      if(opponentRand == 0) {
+        Attack(opponent, player);
+      }
+      else {
+        Defense(opponent, player);
+      }
+      Attack(player, opponent);
+    }
+  }
+  else if(choice == 'd') {
+    if(player.showSpeed() >= opponent.showSpeed()) {
+      Defense(player, opponent);
+      if(opponentRand == 0) {
+        Attack(opponent, player);
+      }
+      else {
+        Defense(opponent, player);
+      }
+    }
+    else if(player.showSpeed() < opponent.showSpeed()) {
+      if(opponentRand == 0) {
+        Attack(opponent, player);
+      }
+      else {
+        Defense(opponent, player);
+      }
+      Defense(player, opponent);
+    }
+  }
 }
