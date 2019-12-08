@@ -34,7 +34,11 @@ const std::vector<std::string> battle_text = {
         "Your Jagumon healed itself. Nice to see the work-life balance!", 
         "Opponent Jagumon healed itself. Let's show them what we've got!",
         "Oh noooo!!! Your Jagumon fainted!",
-        "Aha! Opponent's Jagumon is down! Way to go!"
+        "Aha! Opponent's Jagumon is down! Way to go!",
+	"Let's go! Another Jagumon!!",
+	"Here comes another opponent Jagumon!",
+	"YAY! You've won the battle! JeoGyeo is crying!!!",
+	"Damn! You've lost... Let's try again later T^T"
 };
 
 int init() {
@@ -344,7 +348,7 @@ void run() {
     Jagumon presentPC = PC.front();
     story_part = 0;
     story_position = 0;
-    while(User.size() > 0  and deadPC != 3) {
+    while(1) {
 
 	// TODO check if Jagumons are alive. If not, gameover.
         // clear game window
@@ -414,11 +418,72 @@ void run() {
             mvwprintw(game_window, 16, 37, "%i%%", presentUser.showStamina()); 
         wattroff(game_window, A_BOLD);
 
-        //usleep(100);
+        // usleep(100);
 
         // refresh windows
         wrefresh(main_window);
         wrefresh(game_window);
+	    
+	if(presentUser.showStamina() == 0) {
+	  User.pop_back();
+          if(User.size() == 0) {
+	    story_position = 0;
+            //werase(main_window);
+            while(story_position < battle_text[9].length()) {
+              wattron(main_window, A_BOLD);
+              mvwaddch(main_window, 20, 5 + story_position, battle_text[9][story_position]);
+              wattroff(main_window, A_BOLD);
+              story_position++;
+              usleep(10000);
+              wrefresh(main_window);
+	    }
+	  }
+          else {
+            presentUser = User.back();
+	    story_position = 0;
+            //werase(main_window);
+            while(story_position < battle_text[6].length()) {
+              wattron(main_window, A_BOLD);
+              mvwaddch(main_window, 20, 5 + story_position, battle_text[6][story_position]);
+              wattroff(main_window, A_BOLD);
+              story_position++;
+              usleep(10000);
+              wrefresh(main_window);
+	    }
+          }
+          sleep(2);
+          mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
+	}
+	if(presentPC.showStamina() == 0) {
+	  deadPC++;
+          if(deadPC == 3) {
+	    story_position = 0;
+            //werase(main_window);
+            while(story_position < battle_text[8].length()) {
+              wattron(main_window, A_BOLD);
+              mvwaddch(main_window, 20, 5 + story_position, battle_text[8][story_position]);
+              wattroff(main_window, A_BOLD);
+              story_position++;
+              usleep(10000);
+              wrefresh(main_window);
+	    }
+	  }
+          else {
+            presentPC = PC[deadPC];
+	    story_position = 0;
+            //werase(main_window);
+            while(story_position < battle_text[7].length()) {
+              wattron(main_window, A_BOLD);
+              mvwaddch(main_window, 20, 5 + story_position, battle_text[7][story_position]);
+              wattroff(main_window, A_BOLD);
+              story_position++;
+              usleep(10000);
+              wrefresh(main_window);
+	    }
+          }
+          sleep(2);
+          mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
+	}
 
 
         if(game_over) {
