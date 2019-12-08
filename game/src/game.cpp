@@ -741,6 +741,20 @@ void actingBySpeed(Jagumon &player, Jagumon &opponent, char choice) {
         }
         sleep(2);
         mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
+	if(player.showStamina() == 0) {
+	  story_position = 0;
+          //werase(main_window);
+          while(story_position < battle_text[4].length()) {
+            wattron(main_window, A_BOLD);
+            mvwaddch(main_window, 20, 5 + story_position, battle_text[4][story_position]);
+            wattroff(main_window, A_BOLD);
+            story_position++;
+            usleep(10000);
+            wrefresh(main_window);
+          }
+          sleep(2);
+          mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
+	}
       }
       else {
         Defense(opponent, player);
@@ -773,6 +787,20 @@ void actingBySpeed(Jagumon &player, Jagumon &opponent, char choice) {
         }
         sleep(2);
         mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
+	if(player.showStamina() == 0) {
+	  story_position = 0;
+          //werase(main_window);
+          while(story_position < battle_text[4].length()) {
+            wattron(main_window, A_BOLD);
+            mvwaddch(main_window, 20, 5 + story_position, battle_text[4][story_position]);
+            wattroff(main_window, A_BOLD);
+            story_position++;
+            usleep(10000);
+            wrefresh(main_window);
+          }
+          sleep(2);
+          mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
+	}
       }
       else {
         Defense(opponent, player);
@@ -789,19 +817,21 @@ void actingBySpeed(Jagumon &player, Jagumon &opponent, char choice) {
         sleep(2);
         mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
       }
-      Defense(player, opponent);
-      story_position = 0;
-      //werase(main_window);
-      while(story_position < battle_text[2].length()) {
-        wattron(main_window, A_BOLD);
-        mvwaddch(main_window, 20, 5 + story_position, battle_text[2][story_position]);
-        wattroff(main_window, A_BOLD);
-        story_position++;
-        usleep(10000);
-        wrefresh(main_window);
+      if(player.showStamina() > 0) {
+        Defense(player, opponent);
+        story_position = 0;
+        //werase(main_window);
+        while(story_position < battle_text[2].length()) {
+          wattron(main_window, A_BOLD);
+          mvwaddch(main_window, 20, 5 + story_position, battle_text[2][story_position]);
+          wattroff(main_window, A_BOLD);
+          story_position++;
+          usleep(10000);
+          wrefresh(main_window);
+        }
+        sleep(2);
+        mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
       }
-      sleep(2);
-      mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
     }
   }
 }
