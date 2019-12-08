@@ -303,7 +303,7 @@ void run() {
 
 	mvwprintw(game_window, 2+finger, 9, ">");
         mvwprintw(game_window, 14, 9, "User Jagumon:");
-        mvwprintw(game_window, 14, 25, "PC Jagumon:");
+        mvwprintw(game_window, 14, 25, "JeoGyeo Jagumon:");
         if(party >= 1) {
           mvwprintw(game_window, 17, 9, "3. ");
           mvwprintw(game_window, 17, 12, User[0].showName());
