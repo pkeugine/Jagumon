@@ -24,8 +24,18 @@ void Attack(Jagumon&, Jagumon&);
 void Defense(Jagumon&, Jagumon&);
 void actingBySpeed(Jagumon&, Jagumon&, char);
 
-size_t story_part = 0;
-size_t story_position = 0;
+size_t story_part = 0;  	// manage story diaglog lines
+size_t story_position = 0; 	// manage story dialog sections
+int tick = 0; 			// manage time in game
+
+const std::vector<std::string> battle_text = { 
+        "Your Jagumon attacked the opponent Jagumon! Hell yeah!", 
+        "Opponent Jagumon attacked your Jagumon. It hurts!",
+        "Your Jagumon healed itself. Nice to see the work-life balance!", 
+        "Opponent Jagumon healed itself. Let's show them what we've got!",
+        "Oh noooo!!! Your Jagumon fainted!",
+        "Aha! Opponent's Jagumon is down! Way to go!"
+};
 
 int init() {
     
@@ -88,7 +98,6 @@ int init() {
 
 void run() {
     
-    int tick = 0;
     int choo_char = 0; // selecting Jagumon in CHOOSE JAGUMON PHASE
     int in_char = 0; // selecting action in BATTLE PHASE
     int finger = 0; // point at the Jagumon of Player's choice
@@ -382,53 +391,10 @@ void run() {
         // Jagumons appearance
         mvwprintw(game_window, 16, 10, presentUser.showName());
         mvwprintw(game_window, 2, 60, presentPC.showName());
-        /* STUPID FUCK
-        if(presentUser.showName() == "AAA") {
-          mvwprinw(game_window, 16, 10, "AAA");
-        }
-        else if(presentUser.showName() == "BBB") {
-        }
-        else if(presentUser.showName() == "CCC") {
-        }
-        else if(presentUser.showName() == "DDD") {
-        }
-        else if(presentUser.showName() == "EEE") {
-        }
-        else if(presentUser.showName() == "GGG") {
-        }
-        else if(presentUser.showName() == "HHH") {
-        }
-        else if(presentUser.showName() == "JJJ") {
-        }
-        else if(presentUser.showName() == "KKK") {
-        }
-        else if(presentUser.showName() == "LLL") {
-        }
-        if(presentPC.showName() == "AAA") {
-        }
-        else if(presentPC.showName() == "BBB") {
-        }
-        else if(presentPC.showName() == "CCC") {
-        }
-        else if(presentPC.showName() == "DDD") {
-        }
-        else if(presentPC.showName() == "EEE") {
-        }
-        else if(presentPC.showName() == "GGG") {
-        }
-        else if(presentPC.showName() == "HHH") {
-        }
-        else if(presentPC.showName() == "JJJ") {
-        }
-        else if(presentPC.showName() == "KKK") {
-        }
-        else if(presentPC.showName() == "LLL") {
-        }
-        */
 
         // draw ENEMY percentage
         wattron(game_window, A_BOLD);
-        if(BBB.showStamina() <= 25) {
+        if(presentPC.showStamina() <= 25) {
           wattron(game_window, COLOR_PAIR(4));
           if(tick % 100 < 50)
             mvwprintw(game_window, 2, 38, "%i%%", presentPC.showStamina()); 
@@ -588,27 +554,20 @@ void Attack(Jagumon &user, Jagumon &other) {
 }
 
 void Defense(Jagumon &user, Jagumon &other) {
-  if(user.showStamina() >= 100) {
-    user.setStamina(100);
-  }
-  else {
+  if(user.showStamina() + user.showDefense() <= 130)
     user.setStamina(user.showStamina() + user.showDefense());
-  }
+  else
+    user.setStamina(130);
 }
 
 void actingBySpeed(Jagumon &player, Jagumon &opponent, char choice) {
   opponentRand = rand() % 2;
-  const std::vector<std::string> battle_text = { 
-        "Your Jagumon attacked the opponent Jagumon! Hell yeah!", 
-        "Opponent Jagumon attacked your Jagumon. It hurts!",
-        "Your Jagumon healed itself. Nice to see the work-life balance!", 
-        "Opponent Jagumon healed itself. Let's show them what we've got!"
-  };
+
   if (choice == 'a') {
     if(player.showSpeed() >= opponent.showSpeed()) {
       Attack(player, opponent);
       story_position = 0;
-      werase(main_window);
+      //werase(main_window);
       while(story_position < battle_text[0].length()) {
         wattron(main_window, A_BOLD);
         mvwaddch(main_window, 20, 5 + story_position, battle_text[0][story_position]);
@@ -617,12 +576,49 @@ void actingBySpeed(Jagumon &player, Jagumon &opponent, char choice) {
         usleep(10000);
         wrefresh(main_window);
       }
-      usleep(70000);
+      sleep(2);
+      mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
 
+      if(opponent.showStamina() > 0) {
+        if(opponentRand == 0) {
+          Attack(opponent, player);
+	  story_position = 0;
+	  //werase(main_window);
+          while(story_position < battle_text[1].length()) {
+            wattron(main_window, A_BOLD);
+            mvwaddch(main_window, 20, 5 + story_position, battle_text[1][story_position]);
+            wattroff(main_window, A_BOLD);
+            story_position++;
+            usleep(10000);
+            wrefresh(main_window);
+          }
+          sleep(2);
+          mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
+        }
+        else {
+          Defense(opponent, player);
+	  story_position = 0;
+          //werase(main_window);
+          while(story_position < battle_text[3].length()) {
+            wattron(main_window, A_BOLD);
+            mvwaddch(main_window, 20, 5 + story_position, battle_text[3][story_position]);
+            wattroff(main_window, A_BOLD);
+            story_position++;
+            usleep(10000);
+            wrefresh(main_window);
+          }
+          sleep(2);
+          mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
+        }  
+      }
+      else if(opponent.showStamina() == 0) {
+      }
+    }
+    else if(player.showSpeed() < opponent.showSpeed()) {
       if(opponentRand == 0) {
         Attack(opponent, player);
 	story_position = 0;
-	werase(main_window);
+        //werase(main_window);
         while(story_position < battle_text[1].length()) {
           wattron(main_window, A_BOLD);
           mvwaddch(main_window, 20, 5 + story_position, battle_text[1][story_position]);
@@ -631,12 +627,13 @@ void actingBySpeed(Jagumon &player, Jagumon &opponent, char choice) {
           usleep(10000);
           wrefresh(main_window);
         }
-        usleep(70000);
+        sleep(2);
+        mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
       }
       else {
         Defense(opponent, player);
 	story_position = 0;
-        werase(main_window);
+        //werase(main_window);
         while(story_position < battle_text[3].length()) {
           wattron(main_window, A_BOLD);
           mvwaddch(main_window, 20, 5 + story_position, battle_text[3][story_position]);
@@ -645,41 +642,12 @@ void actingBySpeed(Jagumon &player, Jagumon &opponent, char choice) {
           usleep(10000);
           wrefresh(main_window);
         }
-        usleep(70000);
-      }
-    }
-    else if(player.showSpeed() < opponent.showSpeed()) {
-      if(opponentRand == 0) {
-        Attack(opponent, player);
-	story_position = 0;
-        werase(main_window);
-        while(story_position < battle_text[1].length()) {
-          wattron(main_window, A_BOLD);
-          mvwaddch(main_window, 20, 5 + story_position, battle_text[1][story_position]);
-          wattroff(main_window, A_BOLD);
-          story_position++;
-          usleep(10000);
-          wrefresh(main_window);
-        }
-        usleep(70000);
-      }
-      else {
-        Defense(opponent, player);
-	story_position = 0;
-        werase(main_window);
-        while(story_position < battle_text[2].length()) {
-          wattron(main_window, A_BOLD);
-          mvwaddch(main_window, 20, 5 + story_position, battle_text[2][story_position]);
-          wattroff(main_window, A_BOLD);
-          story_position++;
-          usleep(10000);
-          wrefresh(main_window);
-        }
-        usleep(70000);
+        sleep(2);
+        mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
       }
       Attack(player, opponent);
       story_position = 0;
-      werase(main_window);
+      //werase(main_window);
       while(story_position < battle_text[0].length()) {
         wattron(main_window, A_BOLD);
         mvwaddch(main_window, 20, 5 + story_position, battle_text[0][story_position]);
@@ -688,14 +656,15 @@ void actingBySpeed(Jagumon &player, Jagumon &opponent, char choice) {
         usleep(10000);
         wrefresh(main_window);
       }
-      usleep(70000);
+      sleep(2);
+      mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
     }
   }
   else if(choice == 'd') {
     if(player.showSpeed() >= opponent.showSpeed()) {
       Defense(player, opponent);
       story_position = 0;
-      werase(main_window);
+      //werase(main_window);
       while(story_position < battle_text[2].length()) {
         wattron(main_window, A_BOLD);
         mvwaddch(main_window, 20, 5 + story_position, battle_text[2][story_position]);
@@ -704,11 +673,12 @@ void actingBySpeed(Jagumon &player, Jagumon &opponent, char choice) {
         usleep(10000);
         wrefresh(main_window);
       }
-      usleep(70000);
+      sleep(2);
+      mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
       if(opponentRand == 0) {
         Attack(opponent, player);
 	story_position = 0;
-        werase(main_window);
+        //werase(main_window);
         while(story_position < battle_text[1].length()) {
           wattron(main_window, A_BOLD);
           mvwaddch(main_window, 20, 5 + story_position, battle_text[1][story_position]);
@@ -717,12 +687,13 @@ void actingBySpeed(Jagumon &player, Jagumon &opponent, char choice) {
           usleep(10000);
           wrefresh(main_window);
         }
-        usleep(70000);
+        sleep(2);
+        mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
       }
       else {
         Defense(opponent, player);
 	story_position = 0;
-        werase(main_window);
+        //werase(main_window);
         while(story_position < battle_text[3].length()) {
           wattron(main_window, A_BOLD);
           mvwaddch(main_window, 20, 5 + story_position, battle_text[3][story_position]);
@@ -731,14 +702,15 @@ void actingBySpeed(Jagumon &player, Jagumon &opponent, char choice) {
           usleep(10000);
           wrefresh(main_window);
         }
-        usleep(70000);
+        sleep(2);
+        mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
       }
     }
     else if(player.showSpeed() < opponent.showSpeed()) {
       if(opponentRand == 0) {
         Attack(opponent, player);
 	story_position = 0;
-        werase(main_window);
+        //werase(main_window);
         while(story_position < battle_text[1].length()) {
           wattron(main_window, A_BOLD);
           mvwaddch(main_window, 20, 5 + story_position, battle_text[1][story_position]);
@@ -747,12 +719,13 @@ void actingBySpeed(Jagumon &player, Jagumon &opponent, char choice) {
           usleep(10000);
           wrefresh(main_window);
         }
-        usleep(70000);
+        sleep(2);
+        mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
       }
       else {
         Defense(opponent, player);
 	story_position = 0;
-        werase(main_window);
+        //werase(main_window);
         while(story_position < battle_text[3].length()) {
           wattron(main_window, A_BOLD);
           mvwaddch(main_window, 20, 5 + story_position, battle_text[3][story_position]);
@@ -761,11 +734,12 @@ void actingBySpeed(Jagumon &player, Jagumon &opponent, char choice) {
           usleep(10000);
           wrefresh(main_window);
         }
-        usleep(70000);
+        sleep(2);
+        mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
       }
       Defense(player, opponent);
       story_position = 0;
-      werase(main_window);
+      //werase(main_window);
       while(story_position < battle_text[2].length()) {
         wattron(main_window, A_BOLD);
         mvwaddch(main_window, 20, 5 + story_position, battle_text[2][story_position]);
@@ -774,7 +748,8 @@ void actingBySpeed(Jagumon &player, Jagumon &opponent, char choice) {
         usleep(10000);
         wrefresh(main_window);
       }
-      usleep(70000);
+      sleep(2);
+      mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
     }
   }
 }
