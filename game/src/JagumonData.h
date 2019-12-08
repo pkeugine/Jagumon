@@ -37,16 +37,16 @@ public:
 };
 
 //Jagumons
-Jagumon AAA("AAA", 50, 50, 5, 100);
-Jagumon BBB("BBB", 20, 45, 10, 100);
-Jagumon CCC("CCC", 30, 40, 15, 100);
-Jagumon DDD("DDD", 40, 35, 20, 100);
-Jagumon EEE("EEE", 50, 30, 25, 100);
-Jagumon GGG("GGG", 60, 25, 30, 100);
-Jagumon HHH("HHH", 70, 20, 35, 100);
-Jagumon JJJ("JJJ", 80, 15, 40, 100);
-Jagumon KKK("KKK", 90, 10, 45, 100);
-Jagumon LLL("LLL", 95, 10, 50, 100);
+Jagumon AAA("AAA", 45, 40, 60, 100);
+Jagumon BBB("BBB", 50, 20, 20, 100);
+Jagumon CCC("CCC", 30, 50, 30, 100);
+Jagumon DDD("DDD", 60, 10, 20, 100);
+Jagumon EEE("EEE", 30, 30, 60, 100);
+Jagumon GGG("GGG", 40, 45, 40, 100);
+Jagumon HHH("HHH", 65, 10, 10, 100);
+Jagumon JJJ("JJJ", 40, 50, 20, 100);
+Jagumon KKK("KKK", 20, 45, 65, 100);
+Jagumon LLL("LLL", 100, 10, 5, 100);
 
 std::vector<Jagumon>jagumon = { AAA, BBB, CCC, DDD, EEE, GGG, HHH, JJJ, KKK, LLL };
 
