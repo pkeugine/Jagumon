@@ -409,7 +409,7 @@ void run() {
 
 	// draw MY stamina percentage
 	wattron(game_window, A_BOLD);
-        if(AAA.showStamina() <= 25) {
+        if(presentUser.showStamina() <= 25) {
           wattron(game_window, COLOR_PAIR(4));
           if(tick % 100 < 50)
             mvwprintw(game_window, 16, 37, "%i%%", presentUser.showStamina()); 
@@ -436,9 +436,10 @@ void run() {
               story_position++;
               usleep(10000);
               wrefresh(main_window);
+              break;
 	    }
 	  }
-          else {
+          else if(User.size() > 0 and User.size() <= 3) {
             presentUser = User.back();
 	    story_position = 0;
             //werase(main_window);
@@ -466,9 +467,10 @@ void run() {
               story_position++;
               usleep(10000);
               wrefresh(main_window);
+              break;
 	    }
 	  }
-          else {
+          else if(deadPC >= 0 and deadPC < 3) {
             presentPC = PC[deadPC];
 	    story_position = 0;
             //werase(main_window);
@@ -485,49 +487,6 @@ void run() {
           mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
 	}
 
-
-        if(game_over) {
-
-            // erase current game content on window and redraw a clean window
-            werase(main_window);
-            wattron(main_window, A_BOLD);
-            box(main_window, 0, 0);
-            wattroff(main_window, A_BOLD);
-
-            wmove(main_window, game_area.bot() + 3, 1);
-            whline(main_window, '-', screen_area.width() -2);
-
-            wrefresh(main_window);
-            wrefresh(game_window);
-
-            // print game over prompt 
-            mvwprintw(game_window, 10, 10, "GAME OVER");
-            mvwprintw(game_window, 10 + 2, 10 - 7, "Press SPACE to play again");
-            mvwprintw(game_window, 10 + 4, 10 - 7, "Press 'q' to quit the game");
-
-            // loop until player either quits or restarts game
-            while(1) {
-                in_char = wgetch(main_window);
-
-                if(in_char == ' ') { // reset all variables and restart game
-                    tick = 0;
-                    in_char = 0;
-                    game_over = false;
-                    exit_flag = false;
-                    break;
-                }
-
-                else if(in_char == 'q') {
-                    exit_flag = true;
-                    break;
-                }
-
-                wrefresh(game_window);
-
-                tick++;
-                usleep(10000); // 1 ms
-            }
-        }
 
         if(exit_flag) break;
 
@@ -704,7 +663,7 @@ void actingBySpeed(Jagumon &player, Jagumon &opponent, char choice) {
           usleep(10000);
           wrefresh(main_window);
         }
-        sleep(2);
+        //sleep(2);
         mvwhline(main_window, 20, 1, ' ', screen_area.width() - 2);
       }
       else {
