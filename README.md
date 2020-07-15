@@ -1,5 +1,5 @@
 # Jagumon
-Terminal based game for Data Structure Practice class.
+Terminal based game.
 
 Works in Ubuntu 18.04
 
